@@ -1,9 +1,9 @@
 # Quo Vadis
 
-This repository provides the official PyTorch Lightning implementation of Goal-GAN, presented at [ACCV 2020](http://accv2020.kyoto/)(Oral)
+This repository provides the official PyTorch Lightning implementation of Goal-GAN, presented at [NeurIPS 2022](https://neurips.cc/)
 
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
-Patrick Dendorfer, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
+Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
 
 ## Motivation
 In this paper, we present Goal-GAN, an interpretable and end-to-end trainable model for human trajectory prediction. 
