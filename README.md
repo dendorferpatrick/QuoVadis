@@ -5,6 +5,31 @@ This repository provides the official PyTorch Lightning implementation of Goal-G
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
 Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
 
+
+
+## Setup
+All code was developed and tested with Python 3.6.3, PyTorch 1.6.0., and PyTorch-Lightning 0.9.0.
+
+You can setup a virtual environment and install the required packages:
+
+```
+pip install -r requirements.txt   # Install dependencies
+```
+
+
+## Quick Start
+
+```
+pip run.py
+```
+### Feature Extraction
+
+### Homography Estimation
+
+### Map Creation
+
+
+
 ## Motivation
 In this paper, we present Goal-GAN, an interpretable and end-to-end trainable model for human trajectory prediction. 
 We model the task of trajectory prediction as an intuitive two-stage process: (i) goal estimation, which predicts the most likely target positions of the agent, followed by a (ii) routing module, which estimates a set of plausible trajectories that route towards the estimated goal. 
@@ -65,7 +90,6 @@ If you use this code for your research, please cite our work:
 
 
 ## Setup
-
 All code was developed and tested with Python 3.6.3, PyTorch 1.6.0., and PyTorch-Lightning 0.9.0.
 
 You can setup a virtual environment and install the required packages:
