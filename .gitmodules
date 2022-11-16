@@ -1,0 +1,3 @@
+[submodule "MG-GAN"]
+	path = src/trajectory_predictor/models/MG-GAN
+	url = https://github.com/dendorferpatrick/MG-GAN.git

@@ -1,4 +1,4 @@
-DATA_DIRECTORY: /storage/user/dendorfp/
+DATA_DIRECTORY: ./data
 DT: 0.4
 MAX_AGE: 179
 MAX_AGE_VIS: 30
@@ -12,4 +12,6 @@ MIN_IOU_THRESHOLD: 0.2
 APP_THRESHOLD: 1.8
 NR_PREDICTIONS: 3
 PRED_MODEL: "mggan"
-
+DEVICE: "cpu"
+MGGAN_WEIGHTS: "/Users/patrickdendorfer/phd/paper/QuoVadis/data/predictor_weights/mggan-3gen"
+MGGAN_LOG_DIR: "/Users/patrickdendorfer/phd/paper/QuoVadis/src/trajectory_predictor/logs"

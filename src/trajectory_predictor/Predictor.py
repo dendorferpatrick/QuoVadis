@@ -511,11 +511,11 @@ class MGGANPredictor(GANPredictor):
     datasets = ["mot16", "motsynth", "mot17"]
 
     def __init__(self,
+                 model_path,
+                 device,
+                 log_dir,
                  img_min = np.array([10, 10]),
                  checkpoint="best", 
-                 device="cuda",
-                 log_dir="/usr/wiss/dendorfp/dvl/projects/TrackingMOT/Predictors/logs/multi_generator",
-                 model="3_long",
                  dataset_name="motsynth",
                  sequence="001",
                  nr_predictions=3,
@@ -537,22 +537,18 @@ class MGGANPredictor(GANPredictor):
 
         assert dataset_name in self.datasets, f"`dataset_name`: {dataset_name} not valid"
         print(
-            "Starting MGGAN: nr_predictions: {nr_predictions}, model: {model}")
+            f"Starting MGGAN: nr_predictions: {nr_predictions}, model: {model_path}")
         self.strategy = strategy
-        self.name = f"mggan_{model}_{nr_predictions}"
+        self.name = f"mggan_{model_path}_{nr_predictions}"
         self.img_min = img_min
         self.sequence = sequence
         self.nr_predictions = nr_predictions
         self.dataset_name = dataset_name
-        from pathlib import Path
-        model_path = Path(log_dir) / model
-        model_dir = [d for d in model_path.iterdir()
-                     if "version" in d.stem][-1]
+      
+        
+       
 
-        sys.path.append(
-            "/usr/wiss/dendorfp/dvl/projects/TrackingMOT/Predictors")
-        sys.path.append(
-            "/usr/wiss/dendorfp/dvl/projects/TrackingMOT/Predictors/MG-GAN")
+       
         from mggan.model.train import PiNetMultiGeneratorGAN  # noqa: E2
         from data_utils.TrajectoryDataset import OnlineDataset
         
@@ -563,7 +559,7 @@ class MGGANPredictor(GANPredictor):
             map_location = torch.device('cuda:0')  
         else: map_location = torch.device('cpu')  
         model, config = PiNetMultiGeneratorGAN.load_from_path(
-            model_dir, checkpoint, map_location = map_location)
+            model_path, checkpoint, map_location = map_location)
         model.G.to(device)
 
         model.device = device
