@@ -39,7 +39,7 @@ def get_parser():
     )
 
     parser.add_argument(
-        "--save_results",
+        "--save",
         default=False,
         action="store_true",
         help="Save result file",
@@ -144,7 +144,7 @@ def main():
                          debug=True,
                          exists_ok=True,
                          y0=y0)
-        if cfg.save_results and cfg.eval:
+        if cfg.save and cfg.eval:
             motion_model.run_eval()
 
         if cfg.make_video or cfg.plot_results:
