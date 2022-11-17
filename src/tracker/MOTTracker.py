@@ -14,7 +14,7 @@ class MOTTracker(Tracker):
     def __init__(self, df=None,
                  df_detection=None,
                  tracking_file=None,
-                 clean_positions=True,
+                 smooth_positions=True,
                  tracker_name="CenterTrack",
                  detections=True,
                  tracker=True,
@@ -37,8 +37,8 @@ class MOTTracker(Tracker):
         if detections:
             self.df["id"] = np.arange(1, len(self.df) + 1)
 
-        if clean_positions:
-            print("clean position")
+        if smooth_positions:
+            print("Smoothing position coordinates")
             self.df.sort_values("frame", inplace=True)
             for id in self.df.id.unique():
 
