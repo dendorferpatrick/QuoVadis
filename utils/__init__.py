@@ -1,1 +1,1 @@
-from .loader import CoordinateTransformer, PanopticLoader
+from ..src.datasets.loader import CoordinateTransformer, PanopticLoader

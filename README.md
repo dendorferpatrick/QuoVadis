@@ -14,6 +14,11 @@ git clone --recurse-submodules https://github.com/dendorferpatrick/QuoVadis
 python run/experiments/run.py --sequences MOT17-02
 ```
 
+
+<div align="center">
+    <img src="misc/method.png" width="80%" alt=""/>
+</div>
+
 ## Setup
 All code was developed and tested with Python 3.6.3, PyTorch 1.6.0., and PyTorch-Lightning 0.9.0.
 
@@ -138,11 +143,14 @@ If you use this code for your research, please cite our work:
 
 ```
 @inproceedings{dendorfer2020accv,
-  title={Goal-GAN: Multimodal Trajectory Prediction Based on Goal Position Estimation}, 
-  author={Patrick Dendorfer and Aljoša Ošep and Laura Leal-Taixé},
-  year={2020},
-  booktitle={Asian Conference on Computer Vision},
+  title={Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?}, 
+  author = {Dendorfer, Patrick and Yugay, Vladimir and Ošep, Aljoša and Leal-Taixé, Laura},
+  year={2022},
+  booktitle={Conference on Neural Information Processing Systems},
   }
+
+  
+
 ```
 
 
