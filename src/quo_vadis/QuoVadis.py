@@ -1882,7 +1882,7 @@ class QuoVadis():
 
     def run_eval(self):
 
-        bash_eval_file = "./submodules/evluation_code/TrackEval/eval_bash_scripts/eval_model.sh"
+        bash_eval_file = "./submodules/evaluation_code/TrackEval/eval_bash_scripts/eval_model.sh"
         if not os.path.isfile(bash_eval_file):
             
             raise NotImplementedError("""
