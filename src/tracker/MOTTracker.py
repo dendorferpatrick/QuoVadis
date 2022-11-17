@@ -16,26 +16,22 @@ class MOTTracker(Tracker):
                  tracking_file=None,
                  smooth_positions=True,
                  tracker_name="CenterTrack",
-                 detections=True,
-                 tracker=True,
+              
                  homography="homography",
                  visual_features=None):
         self.homography = homography
-        if tracker:
-            self.name = tracker_name
-            if df is None:
-                self.df = pd.read_csv(tracking_file)
-            else:
-                self.df = copy.deepcopy(df)
-            assert tracker_name in self.df.tracker.unique(
-            ), f"Tracker `{tracker_name}` does not exist"
-            self.df = self.df[self.df.tracker == tracker_name]
 
+        self.name = tracker_name
+
+        if df is None:
+            self.df = pd.read_csv(tracking_file)
         else:
-            self.df = df_detection
-            self.name = "detections"
-        if detections:
-            self.df["id"] = np.arange(1, len(self.df) + 1)
+            self.df = copy.deepcopy(df)
+        assert tracker_name in self.df.tracker.unique(
+        ), f"Tracker `{tracker_name}` does not exist"
+        self.df = self.df[self.df.tracker == tracker_name]
+
+    
 
         if smooth_positions:
             print("Smoothing position coordinates")

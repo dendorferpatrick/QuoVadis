@@ -108,7 +108,7 @@ def main():
         # get sequence for run
         sequence = mot.data.sequences[0]
 
-        tracker_df, y0 = prepare_sequence(mot, sequence)
+        tracker_df, y0 = prepare_sequence(sequence)
 
         tracker = MOTTracker(df=tracker_df,
                              tracker_name=cfg.tracker_name,
@@ -121,19 +121,18 @@ def main():
         
         predictor = get_predictor(cfg)
 
-        motion_model = QuoVadis(predictor=predictor,
+        quo_vadis = QuoVadis(predictor=predictor,
                                 tracker=tracker,
                                 sequence=sequence)
 
         # run model
-        motion_model.run(motion_dim=cfg.MOTION_DIM,
+        quo_vadis.run(motion_dim=cfg.MOTION_DIM,
                          save_results=cfg.save,
                          save_directory=cfg.SAVE_DIRECTORY,
                          min_iou_threshold=cfg.MIN_IOU_THRESHOLD,
                          L2_threshold=cfg.L2_THRESHOLD,
                          IOU_threshold=cfg.IOU_THRESHOLD,
                          min_appearance_threshold=cfg.APP_THRESHOLD,
-                         hallucinate=False,
                          frames=frames,
                          social_interactions=False,
                          Id_switch_metric="IOU",
@@ -145,13 +144,14 @@ def main():
                          exists_ok=True,
                          y0=y0)
         if cfg.save and cfg.eval:
-            motion_model.run_eval()
+            quo_vadis.run_eval()
 
         if cfg.make_video or cfg.plot_results:
-            motion_model.plot_results(show=False, 
+            
+            quo_vadis.plot_results(show=False, 
                                         save=cfg.save_vis, 
                                         make_video=cfg.make_video, 
-                                        save_folder="tmp",
+                                        save_folder=quo_vadis.vis_save_folder ,
                                         frames=frames)
 
 

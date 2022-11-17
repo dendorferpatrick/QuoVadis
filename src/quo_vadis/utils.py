@@ -556,9 +556,9 @@ def matching(score_mat):
 
 
 
-def prepare_sequence(mot, sequence):
-    tracker_df = mot.data.sequences[0].tracker
-
+def prepare_sequence(sequence):
+    tracker_df = sequence.tracker
+   
     item = sequence.__getitem__(1, fields=["homography", "map"])
 
     visibility = item["map"]["visibility_img"]

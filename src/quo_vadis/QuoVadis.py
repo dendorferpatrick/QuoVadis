@@ -895,6 +895,7 @@ class QuoVadis():
         for frame in tqdm(frames):
 
             tracks = self.tracker.get_frame(frame)
+
             if self.visibility:
 
                 item = self.sequence.__getitem__(
@@ -906,10 +907,6 @@ class QuoVadis():
                     visibility = np.ones_like(visibility)
 
                 self.visibility_map = visibility
-            # if self.y0 is not None:
-            #     H = self.sequence.__getitem__(
-            #         frame, ["homography_depth"])["homography_depth"]["IPM"]
-            #     self.y0 = get_y0(H)
 
             egomotion = self.sequence.__getitem__(
                 frame, ["egomotion"])["egomotion"]
@@ -1327,13 +1324,10 @@ class QuoVadis():
             self.tracker_folder = os.path.join(
                 self.save_directory, self.sequence.dataset)
             save_folder = os.path.join(self.tracker_folder, self.tracker.name)
+
             results_folder = os.path.join(save_folder, "data")
             configs_folder = os.path.join(save_folder, "cfgs")
-            # "/storage/user/dendorfp/{}/prediction_results/{}_{}/{}/data".format(self.sequence.dataset,
-            #                                                                     self.predictor.name,
-
-            #                                                                     save_name,
-            #                                                                     self.tracker.name))
+            self.vis_save_folder = os.path.join(save_folder, "vis")
 
             os.makedirs(save_folder, exist_ok=True)
             os.makedirs(results_folder, exist_ok=True)
@@ -1382,6 +1376,7 @@ class QuoVadis():
 
         # alive_track_ids = set(self.m.alive_ids)
         new_tracks = []
+
         new_tracks_id = list(unique_track_ids.difference(alive_tracker_ids))
 
         for id in new_tracks_id:
@@ -1586,14 +1581,8 @@ class QuoVadis():
 
         return df
 
-    def load_result(self, save_name):
-        # TODO re-write function
-        save_folder = os.path.join(
-            "/storage/user/dendorfp/{}/prediction_results/{}_{}/{}/data".format(self.sequence.dataset,
-                                                                                self.predictor.name,
-                                                                                save_name,
-                                                                                self.tracker.name))
-        self.save_name = save_name
+    def load_result(self, save_folder):
+
         save_file = os.path.join(save_folder, "{}.txt".format(
             self.sequence.name))
         columns = ["frame", "id", "bb_left", "bb_top", "bb_width", "bb_height",
@@ -1608,7 +1597,9 @@ class QuoVadis():
                      show_visibility=False,
                      ids=None,
 
+
                      save_folder=None):
+
         self.df.sort_values("frame", inplace=True)
         id_union = list(set(self.df.id.unique()).union(
             set(self.tracker.df.id.unique())))
@@ -1616,12 +1607,13 @@ class QuoVadis():
         np.random.seed(2)
         color = {}
         n = len(id_union)
+        print('save folder', save_folder)
         for (id, i) in zip(id_union, range(n)):
             color[id] = ('#%06X' % randint(0, 0xFFFFFF))
-        if save_folder is None:
-            save_folder = os.path.join("/storage/user/dendorfp/{}/prediction_results/{}_{}/{}/img/{}".format(
-                self.sequence.dataset, self.predictor.name, self.save_name, self.tracker.name, self.sequence.name))
         if save:
+            if save_folder is None:
+                raise ValueError("Missing input 'save_folder'")
+
             try:
                 shutil.rmtree(save_folder)
             except:
@@ -1632,24 +1624,30 @@ class QuoVadis():
             frames = self.sequence.frames[:self.max_frames]
 
         for frame in tqdm(frames):
+
             preds = self.df[self.df.frame == frame]
+
             self.plot_frame(frame, preds, show=show,
-                            color=color, save=save_folder if save else None, trajectories=trajectories, show_visibility=show_visibility, ids=ids)
+                            color=color,
+                            save=save_folder if save else None,
+                            trajectories=trajectories, show_visibility=show_visibility, ids=ids)
 
         if make_video:
-            print("Create Video")
-            video_folder = os.path.join(
-                "/storage/user/dendorfp/{}/prediction_results/{}_{}/{}/video".format(self.sequence.dataset, self.predictor.name, self.save_name, self.tracker.name))
+            print("Creating Video")
+            video_folder = os.path.join(save_folder, 'video')
+            image_folder = os.path.join(save_folder, 'images')
             os.makedirs(video_folder, exist_ok=True)
             import subprocess
             fps = 20
-            subprocess.call(["ffmpeg", "-y", "-r", str(fps), "-start_number", "{}".format(np.min(frames)), "-i", "{}/%d.jpg".format(save_folder), "-vcodec",
+            subprocess.call(["ffmpeg", "-y", "-r", str(fps), "-start_number", "{}".format(np.min(frames)), "-i", "{}/%d.jpg".format(image_folder), "-vcodec",
                             "mpeg4", "-qscale", "5", "-r", str(fps), "{}/{}-{}.mp4".format(video_folder, self.tracker.name,  self.sequence.name)])
             print(f"Save video to {video_folder}")
 
     def plot_frame(self, frame, preds, color=None, show=False,
-                   save=False, trajectories=True, show_visibility=False, ids=None):
+                   save=False, trajectories=True, show_visibility=False, ids=None,
 
+                   ):
+        scale = 0.1
         if not trajectories:
             fig, ax = plt.subplots(1)
             axT = None
@@ -1666,18 +1664,17 @@ class QuoVadis():
         ax.set_xlim(0, self.img_width)
         ax.set_ylim(self.img_height, 0)
 
+        if (trajectories or show_visibility):
 
-        if trajectories or show_visibility:
             axT.set_title("BEV ({})".format(frame), fontsize=30)
 
             item = self.sequence.__getitem__(
                 frame, fields=["rgb", "homography", "map", "egomotion"])
             H = np.array(item[self.tracker.homography]["IPM"])
-            inv_H = np.array(item[self.tracker.homography]["inv_IPM"])
 
             egomotion = item["egomotion"]
             ground_mask = item["map"]["visibility_img"]
-            print(egomotion)
+
             rgb = item["rgb"]
             if egomotion is not None:
 
@@ -1720,27 +1717,24 @@ class QuoVadis():
 
             new_pos = np.around(new_pos).astype(int)
 
-            img_mask[new_pos[:, 1], new_pos[:, 0]] = ground_img[pixel_positions[:, 1], pixel_positions[:, 0]]/255.
-            img_mask[..., :3] = ndimage.median_filter(img_mask[..., :3], size=2)
-            img_mask[..., -1:] = ndimage.maximum_filter(img_mask[..., -1:], size=2)
+            img_mask[new_pos[:, 1], new_pos[:, 0]
+                     ] = ground_img[pixel_positions[:, 1], pixel_positions[:, 0]]/255.
+            img_mask[..., :3] = ndimage.median_filter(
+                img_mask[..., :3], size=2)
+            img_mask[..., -
+                     1:] = ndimage.maximum_filter(img_mask[..., -1:], size=2)
 
-            axT.imshow(img_mask)
-
-            # axT.invert_xaxis()
-            # axT.invert_yaxis()
+           
             axT.axis("equal")
 
             axT.set_ylim(0, maxs[1])
             axT.set_xlim(0, maxs[0])
+
+            axT.imshow(img_mask)
+
             axT.axis("off")
 
-            scale = 0.1
-            origin = -mins[:2]  # - np.array(visibility["offset"])
-
-            # p = patches.Polygon([[(p[0]/scale + origin[0], (p[1]/scale + origin[1])]
-            #     for p in visibility["polygon"]],  facecolor='red', alpha=0.2)
-            # axes[2].add_patch(p)
-
+            origin = -mins[:2]  
         item = self.sequence.__getitem__(
             frame, fields=["rgb", "homography", "map", "egomotion"])
         H = np.array(item[self.tracker.homography]["IPM"])
@@ -1749,17 +1743,17 @@ class QuoVadis():
         egomotion = item["egomotion"]
         text_ids = []
         for index, row in preds.iterrows():
-            
+
             if ids is not None:
                 if row.id not in ids:
-            
+
                     continue
             ax.set_title("QuoVadis ({})".format(frame), fontsize=30)
             id_color = color[int(row.id)]
 
             if row.active == 1:
                 facecolor = "none"
-              
+
                 alpha = 1.
                 linewidth = 2
                 if row.is_prediction == 1:
@@ -1772,8 +1766,7 @@ class QuoVadis():
                 if row.age > 0 and row.active_prediction == 1:
                     facecolor = id_color
                     marker = "^"
-                
-                
+
                     alpha = 0.15
                     if row.visible == 0:
                         linestyle = None
@@ -1808,9 +1801,7 @@ class QuoVadis():
                     y += egomotion["median"][1] + offset[:, 1]
                 pos_x = x/scale + origin[0]
                 pos_y = y/scale + origin[1]
-                # pos_x = row["x"]
-                # pos_y = row["y"]
-
+               
                 if row.outside == 1.:
 
                     marker = "p"
@@ -1822,7 +1813,7 @@ class QuoVadis():
                     else:
                         marker = "."
                 axT.scatter(pos_x, pos_y, s=1000, edgecolors='black',
-                                marker=marker, color=color[int(row.id)])
+                            marker=marker, color=color[int(row.id)])
 
                 if row.active == 0:
 
@@ -1831,11 +1822,7 @@ class QuoVadis():
                     axT.add_patch(circle)
                     track = self.m.get_track(row.id)
 
-                    # old_traj  = self.df[(self.df.frame < frame) & (self.df.id == row.id)][["x", "y"]].values
-                    # if egomotion is not None:
-                    #         print(egomotion["median"])
-                    #         old_traj[:, :2]+= egomotion["median"]
-                    # axT.plot(old_traj[:, 0]/scale + origin[0] , old_traj[:, 1]/scale + origin[1], "-", alpha = 0.3 , linewidth = 2,   color = color[int(row.id)])
+                  
                     for pred in track.prediction_data[row.frame].values():
                         try:
                             trajectory = pred.memory["trajectory"][:, :2]
@@ -1846,7 +1833,7 @@ class QuoVadis():
                             else:
                                 trajectory_plot = trajectory
                             axT.plot(trajectory_plot[:, 0]/scale + origin[0], trajectory_plot[:, 1] /
-                                         scale + origin[1], "--", alpha=0.5, linewidth=5,   color=color[int(row.id)])
+                                     scale + origin[1], "--", alpha=0.5, linewidth=5,   color=color[int(row.id)])
                             if self.motion_dim == 3:
                                 (p0, p1) = self.sequence.project_homography(
                                     trajectory[:, 0], trajectory[:, 1], frame,  homography=self.tracker.homography, y0=y0)
@@ -1862,21 +1849,22 @@ class QuoVadis():
                             print(traceback.print_exc())
                             pass
 
-        print(show)
+      
 
         if show:
             plt.show()
-        if save:
 
+        if save:
+            os.makedirs(os.path.join(save, "images"), exist_ok=True)
             self.df.sort_values(["frame", "id"], inplace=True)
-            save_file = os.path.join(save, "{}.jpg".format(
+            save_file = os.path.join(save, "images", "{}.jpg".format(
                 frame))
 
             plt.savefig(save_file, bbox_inches='tight', )
 
             plt.clf()
             plt.cla()
-            plt.cla()
+            plt.close()
 
         return fig, ax
 
@@ -1884,7 +1872,7 @@ class QuoVadis():
 
         bash_eval_file = "./submodules/evaluation_code/TrackEval/eval_bash_scripts/eval_model.sh"
         if not os.path.isfile(bash_eval_file):
-            
+
             raise NotImplementedError("""
             The evaluation file does not exists. There might be 2 possible probelms \\
                 1. Makes sure you start the script from the main working directory \\

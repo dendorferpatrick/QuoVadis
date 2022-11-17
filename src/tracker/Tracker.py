@@ -3,6 +3,7 @@ from abc import ABC
 
 class Tracker(ABC):
     def get_frame(self, frame):
+
         df_frame = self.df[self.df.frame == frame]
         return df_frame
 
