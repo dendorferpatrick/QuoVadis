@@ -4,7 +4,6 @@
 [submodule "TrackEval"]
 	path = submodules/evaluation_code/TrackEval
 	url = https://github.com/dendorferpatrick/TrackEval.git
-
-[submodule "submodules/depth_estimator/AdaBins"]
+[submodule "AdaBins"]
 	path = submodules/depth_estimator/AdaBins
 	url = https://github.com/VladimirYugay/AdaBins

@@ -1,10 +1,46 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 import traceback
 import numpy as np
 import copy
-import sys
 import torch
 from .kalman_filter import KalmanFilter
+
+
+def get_predictor(cfg):
+    if cfg.PRED_MODEL == "linear":
+        predictor = LinearPredictor()
+    elif cfg.PRED_MODEL == "kalman":
+        predictor = KalmanFilterPredictor(dt=1/30.,
+                                        measurement_uncertainty_x=0.1,
+                                        measurement_uncertainty_y=0.1,
+                                        process_uncertainty=0.1)
+    elif cfg.PRED_MODEL == "static":
+        predictor = StaticPredictor()
+    elif cfg.PRED_MODEL == "mggan":
+        predictor = MGGANPredictor(
+            model_path=cfg.MGGAN_WEIGHTS,
+            device = cfg.DEVICE, 
+            log_dir = cfg.MGGAN_LOG_DIR,
+            nr_predictions=cfg.NR_PREDICTIONS,
+            dataset_name="motsynth",
+            pred_len=15,
+            dt=cfg.DT
+        )
+    elif cfg.PRED_MODEL == "gan":
+        predictor = MGGANPredictor(
+            model_path=cfg.MGGAN_WEIGHTS,
+            device = cfg.DEVICE, 
+            log_dir = cfg.MGGAN_LOG_DIR,
+            nr_predictions=cfg.NR_PREDICTIONS,
+            dataset_name="motsynth",
+            pred_len=15,
+            dt=cfg.DT
+        )
+    else:
+        raise ValueError(
+            "No valid prediction model given for option 'PRED_MODEL'.")
+    return predictor
 
 
 class Predictor(ABC):
@@ -544,13 +580,9 @@ class MGGANPredictor(GANPredictor):
         self.sequence = sequence
         self.nr_predictions = nr_predictions
         self.dataset_name = dataset_name
-      
-        
-       
-
        
         from mggan.model.train import PiNetMultiGeneratorGAN  # noqa: E2
-        from data_utils.TrajectoryDataset import OnlineDataset
+        from mggan.data_utils import OnlineDataset
         
         
 
@@ -559,14 +591,13 @@ class MGGANPredictor(GANPredictor):
             map_location = torch.device('cuda:0')  
         else: map_location = torch.device('cpu')  
         model, config = PiNetMultiGeneratorGAN.load_from_path(
-            model_path, checkpoint, map_location = map_location)
+            Path(model_path), checkpoint, map_location = map_location)
         model.G.to(device)
 
         model.device = device
         model.G.eval()
         self.predictor = model
-        print("GRID SIZE", config.grid_size, (config.grid_size > 0))
-        print("PRED LEN", pred_len)
+        
         self.dataset = OnlineDataset(
             img_min=self.img_min,
             cnn=(config.grid_size > 0),
@@ -589,7 +620,7 @@ class MGGANPredictor(GANPredictor):
          
         self.predictor.G.set_pred_len(pred_len) 
         self.predictor.G.pred_len = pred_len
-        print(config.pred_len,self.dataset.framerate , self.dataset.time_step )
+        
     def predict_trajectory(self, obs, gap = 1, **kwargs):
         
         frame = obs["frame"].max()
