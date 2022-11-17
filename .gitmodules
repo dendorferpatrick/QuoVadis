@@ -7,3 +7,9 @@
 [submodule "AdaBins"]
 	path = submodules/depth_estimator/AdaBins
 	url = https://github.com/VladimirYugay/AdaBins
+[submodule "submodules/detectron2"]
+	path = submodules/detectron2
+	url = https://github.com/facebookresearch/detectron2.git
+[submodule "submodules/reID/reID"]
+	path = submodules/reID/reID
+	url = https://github.com/KaiyangZhou/deep-person-reid.git

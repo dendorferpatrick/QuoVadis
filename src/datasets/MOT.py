@@ -35,7 +35,7 @@ class MOTData(DataSet):
             "depth": Field("depth", "depth_img", "sequences", utils._depth_setup_cb_MOT, utils._depth_frame_cb_MOT),
             "calibration": Field("calibration", "calib", "sequences", utils._calibration_setup_cb_mot, utils._calibration_frame_cb),
             "labels": Field("labels", "labels", "sequences", utils._labels_setup_cb_mot, utils._labels_frame_cb),
-            "lidar": Field("lidar", "depth_img", "sequences", utils._depth_setup_cb_MOT, utils._depth_frame_cb_MOT),
+            "lidar": Field("lidar", "depth_img", "sequences", utils._depth_setup_cb, utils._depth_frame_cb),
             "pose": Field("pose", "floor_alignment_new", "sequences", utils._pose_setup_cb_mot, utils._pose_frame_cb),
             "rgb": Field("rgb", "img1", "sequences", utils._rgb_setup_cb_MOT, utils._rgb_frame_cb_MOT),
             "dets": Field("dets", "det", "sequences", utils._dets_setup_cb, utils._dets_frame_cb),

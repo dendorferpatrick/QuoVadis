@@ -11,7 +11,19 @@ import numpy as np
 import open3d as o3d
 import pandas as pd
 from PIL import Image
-from tqdm import tqdm
+import pickle
+from argparse import Namespace
+
+def get_meta_data_classes():
+    meta_data_classes_pkl = "src/datasets/metaDataClasses.pkl"
+    with open(meta_data_classes_pkl, 'rb') as pkl_file:
+        meta_data = Namespace(**pickle.load(pkl_file))
+    return meta_data
+
+# def get_classes2category():
+
+    
+
 
 
 def rot_x(theta):
@@ -817,17 +829,11 @@ def _map_img_frame_cb(seq, key):
 
 
 
-def _depth_frame_cb(seq, key):
-    path = os.path.join(
-        seq.prefix, seq.fields["depth"].folder, seq.name, "depth",  f"{key:04d}.png")
-    return load_png(path)
-
-
 def _depth_setup_cb(path):
     return None, _get_depth_files(path)
 
 
-def _depth_frame_cb_MOT(seq, key):
+def _depth_frame_cb(seq, key):
     path = os.path.join(
         seq.prefix, seq.fields["depth"].folder, seq.name,  f"{key:06d}.npy")
     
@@ -836,7 +842,7 @@ def _depth_frame_cb_MOT(seq, key):
     return depth
 
 
-def _depth_setup_cb_MOT(path):
+def _depth_setup_cb(path):
     return None, _get_depth_files_MOT(path)
 
 

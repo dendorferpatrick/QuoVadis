@@ -1,7 +1,7 @@
-import time
 import tqdm
 import os
 import os.path as osp
+import itertools
 
 from torchvision.transforms import ToTensor
 from torchvision import transforms
@@ -18,6 +18,8 @@ from tqdm import tqdm
 import numpy as np
 import traceback
 
+import warnings
+warnings.filterwarnings('ignore')
 
 to_tensor = ToTensor()
 to_pil = transforms.ToPILImage()
@@ -39,7 +41,7 @@ def pad_bbs(img, im, row_unclipped, padding='zero'):
     top_pad = abs(int(row_unclipped['bb_top'])) if int(
         row_unclipped['bb_top']) < 0 else 0
     bot_pad = abs(int(row_unclipped['bb_bot']) - img.shape[1]
-                    ) if int(row_unclipped['bb_bot']) > img.shape[1] else 0
+                  ) if int(row_unclipped['bb_bot']) > img.shape[1] else 0
 
     h = (row_unclipped['bb_bot'] - row_unclipped['bb_top'])
     w = (row_unclipped['bb_right'] - row_unclipped['bb_left'])
@@ -86,59 +88,55 @@ def pad_bbs(img, im, row_unclipped, padding='zero'):
 
 def get_transform():
     _, trans = build_transforms(
-            height=256,
-            width=129,
-            transforms='random_flip',
-        )
+        height=256,
+        width=129,
+        transforms='random_flip',
+    )
     return trans
 
 
 def _get_images(frame_dets, trans, pad=False, dev='gpu'):
     res, area_out = list(), list()
     # get and image
-    img = to_tensor(Image.open(frame_dets['frame_path'].unique()[0]).convert("RGB"))
+    img = to_tensor(Image.open(
+        frame_dets['frame_path'].unique()[0]).convert("RGB"))
     frame_size = (img.shape[1], img.shape[2])
 
     frame_dets['bb_right'] = frame_dets['bb_left'] + frame_dets['bb_width']
     frame_dets['bb_bot'] = frame_dets['bb_top'] + frame_dets['bb_height']
 
     frame_dets_cli = copy.deepcopy(frame_dets)
-    frame_dets_cli['bb_right'] = frame_dets_cli['bb_right'].clip(0, frame_size[1] )
-    frame_dets_cli['bb_left'] = frame_dets_cli['bb_left'].clip(0, frame_size[1])
-    frame_dets_cli['bb_top'] = frame_dets_cli['bb_top'].clip(0, frame_size[0] )
-    frame_dets_cli['bb_bot'] = frame_dets_cli['bb_bot'].clip(0, frame_size[0] )
-    
-    frame_dets['outside'] = ((frame_dets_cli['bb_right'] == frame_dets['bb_right']) & \
-            (frame_dets_cli['bb_left'] == frame_dets['bb_left']) & \
-            (frame_dets_cli['bb_top'] == frame_dets['bb_top']) & \
-            (frame_dets_cli['bb_bot'] == frame_dets['bb_bot']) ) | \
-            ((frame_dets['bb_left'] == frame_dets['bb_right']) |  
-            (frame_dets['bb_bot'] == frame_dets["bb_top"]))
-             
-    
+    frame_dets_cli['bb_right'] = frame_dets_cli['bb_right'].clip(
+        0, frame_size[1])
+    frame_dets_cli['bb_left'] = frame_dets_cli['bb_left'].clip(
+        0, frame_size[1])
+    frame_dets_cli['bb_top'] = frame_dets_cli['bb_top'].clip(0, frame_size[0])
+    frame_dets_cli['bb_bot'] = frame_dets_cli['bb_bot'].clip(0, frame_size[0])
+
+    frame_dets['outside'] = ((frame_dets_cli['bb_right'] == frame_dets['bb_right']) &
+                             (frame_dets_cli['bb_left'] == frame_dets['bb_left']) &
+                             (frame_dets_cli['bb_top'] == frame_dets['bb_top']) &
+                             (frame_dets_cli['bb_bot'] == frame_dets['bb_bot'])) | \
+        ((frame_dets['bb_left'] == frame_dets['bb_right']) |
+         (frame_dets['bb_bot'] == frame_dets["bb_top"]))
+
     # iterate over bbs in frame
     for ind, row in frame_dets.iterrows():
         # get unclipped detections and bb (im)
-     
+
         row_cli = frame_dets_cli.loc[ind]
         im = img[:, int(row_cli['bb_top']):int(row_cli['bb_bot']), int(
             row_cli['bb_left']):int(row_cli['bb_right'])]
         if not row.outside:
-            res.append( torch.zeros([3, 256, 129]) )
+            res.append(torch.zeros([3, 256, 129]))
             continue
         # pad if part of bb outside of image
         if pad:
             im, area_out = pad_bbs(img, im, row)
         # transform bb
-        try:
-            im = to_pil(im)
-        except:
-            print("error")
-            print(im.shape)
-            print(frame_dets_cli['bb_right'].max() )
-            print(im.shape)
-            print 
-            dsd
+      
+        im = to_pil(im)
+       
         im = trans(im)
         # append to bbs, detections, tracktor ids, ids and visibility
         res.append(im)
@@ -152,10 +150,10 @@ def main(
         path_to_data,
         subset='all',
         det_file_name='det.txt',
-        feature_folder = "",
+        feature_folder="",
         pad=False,
         weight_path=None,
-        sequence = "",
+        sequence="",
         dev='cpu'):
     """
     subset: ['all', 'train', 'test']
@@ -163,10 +161,10 @@ def main(
     trans = get_transform()
     model = models.build_model(name='resnet50', num_classes=1000).to(dev)
     if weight_path is not None:
-        chkpt = torch.load(weight_path, map_location=torch.device('cpu'), encoding='latin1')
+        chkpt = torch.load(weight_path, map_location=torch.device(
+            'cpu'), encoding='latin1')
         model.state_dict = chkpt['state_dict']
-        # print("Load weights that achieved {} rank-1 on Market-1501 dataset".format(chkpt['rank1']))
-        # quit()
+
     model.eval()
 
     if subset == 'all':
@@ -186,36 +184,36 @@ def main(
             'label',
             'vis',
             '?'])
-    
+
     def add_frame_path(i):
         if type(i) == float:
             i = int(i)
         return osp.join(osp.join(path_to_data, f"{i:06d}.jpg"))
 
     dets['frame_path'] = dets['frame'].apply(add_frame_path)
-    dets.sort_values("frame", inplace = True)
+    dets.sort_values("frame", inplace=True)
     first_frames = dets[dets.groupby(["id", "frame"]).frame.transform(
-                    max) == dets['frame']]
-    
-    dets["diff_t"] = dets.sort_values(['id','frame']).groupby('id')['frame'].diff()
-    dets["diff_t_back"] = dets.sort_values(['id','frame']).groupby('id')['frame'].diff(-1)
-    dets["diff_t"].fillna(-1, inplace = True)
-    dets["diff_t_back"].fillna(-1, inplace = True)
+        max) == dets['frame']]
+
+    dets["diff_t"] = dets.sort_values(
+        ['id', 'frame']).groupby('id')['frame'].diff()
+    dets["diff_t_back"] = dets.sort_values(
+        ['id', 'frame']).groupby('id')['frame'].diff(-1)
+    dets["diff_t"].fillna(-1, inplace=True)
+    dets["diff_t_back"].fillna(-1, inplace=True)
     dets["step"] = (dets["diff_t"] == 1)*1
-    dets["step"]+= (dets["diff_t_back"] == -1)*1
+    dets["step"] += (dets["diff_t_back"] == -1)*1
 
     dets_features = dets[dets.step >= 1]
-    print(dets[["frame", "diff_t"]].head)
     
-
 
     outside_masks = list()
     feature_list = list()
-    print(len(dets_features))
-    id_list = list() 
-    frame_list = list() 
-    for frame in tqdm( dets_features['frame'].unique()):
-        
+    
+    id_list = list()
+    frame_list = list()
+    for frame in tqdm(dets_features['frame'].unique()):
+
         df = dets_features[dets_features['frame'] == frame]
         ids = df.id.values
         try:
@@ -223,37 +221,25 @@ def main(
             bb_imgs = bb_imgs[outside_mask]
             ids = ids[outside_mask]
             if len(bb_imgs) == 0:
-                continue 
-   
-            
+                continue
+
             with torch.no_grad():
                 features = model(bb_imgs)
         except:
             print(traceback.print_exc())
-            print("Frame", frame)
-            print(bb_imgs.size())
-            
-            print(len(bb_imgs))
-            dsds
+
         feature_list.extend(features.cpu().numpy())
         outside_masks.extend(outside_mask.tolist())
-        id_list.extend(ids.tolist() )
+        id_list.extend(ids.tolist())
         frame_list.extend([frame] * len(ids))
-    
-    final_array = np.concatenate(( np.array(frame_list)[:, np.newaxis], np.array(id_list)[:, np.newaxis], np.array(feature_list)), 1)
-  
+
+    final_array = np.concatenate((np.array(frame_list)[:, np.newaxis], np.array(
+        id_list)[:, np.newaxis], np.array(feature_list)), 1)
+
     # store features
     os.makedirs(feature_folder, exist_ok=True)
     np.save(os.path.join(feature_folder, f"{sequence}.npy"), final_array)
-    # with open(os.path.join('features', path_to_data.split('/')[-1], seq + '.json'), 'w') as jf:
-    #     print('storing features to {}'.format(os.path.join('features', path_to_data.split('/')[-1], seq + '.json')))
-    #     json.dump(feature_list, jf)
-    
-    # # store outside mask
-    # os.makedirs(os.path.join('outside_masks', path_to_data.split('/')[-1]), exist_ok=True)
-    # with open(os.path.join('outside_masks', path_to_data.split('/')[-1], seq + '.json'), 'w') as jf:
-    #     print('storing features to {}'.format(os.path.join('outside_masks', path_to_data.split('/')[-1], seq + '.json')))
-    #     json.dump(feature_list, jf)
+   
 
 def compute_dist(X, Y=None, distance_metric='cosine'):
     if Y is None:
@@ -269,19 +255,25 @@ def compute_dist(X, Y=None, distance_metric='cosine'):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     # basic experiment setting
-    parser.add_argument('--challenge' , default = "MOT16", type = str , help="challenge")
-    parser.add_argument('--sequence' , default = "MOT16-02", type = str , help="sequence")
-    parser.add_argument('--tracker' , default = "ByteTrack", type = str , help="tracker")
+    parser.add_argument('--challenge', default="MOT17",
+                        type=str, help="challenge")
+    parser.add_argument('--sequences', nargs="+", default=["MOT17-02"],
+                        type=str, help="sequence")
+    parser.add_argument('--trackers', nargs="+", default=["CenterTrack"],
+                        type=str, help="tracker")
     args = parser.parse_args()
-    feature_folder = f"/storage/user/dendorfp/{args.challenge}/tracker/{args.tracker}/features"
-    
-    main(
 
-        path_to_data=f"/storage/user/dendorfp/{args.challenge}/img1/{args.sequence}/img1/",
-        subset='all',
-        sequence = args.sequence, 
-        det_file_name=f"/storage/user/dendorfp/{args.challenge}/tracker/{args.tracker}/data/{args.sequence}.txt",
-        feature_folder = feature_folder,
-        weight_path='resnet50_market_xent.pth.tar',
-        pad=False,
-        dev='gpu' if torch.cuda.is_available() else 'cpu')
+    for sequence, tracker in itertools.product(args.sequences, args.trackers):
+        print(f'Running sequence: {sequence} and tracker: {tracker}')
+        feature_folder = f"./data/{args.challenge}/tracker/{tracker}/features"
+       
+        main(
+
+            path_to_data=f"./data/{args.challenge}/sequences/{sequence}/img1/",
+            subset='all',
+            sequence=sequence,
+            det_file_name=f"./data/{args.challenge}/tracker/{tracker}/data/{sequence}.txt",
+            feature_folder=feature_folder,
+            weight_path='./data/reID_weights/resnet50_market_xent.pth.tar',
+            pad=False,
+            dev='gpu' if torch.cuda.is_available() else 'cpu')

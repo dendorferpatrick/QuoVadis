@@ -26,6 +26,10 @@ You can setup a virtual environment and install the required packages:
 
 ```
 pip install -r requirements.txt   # Install dependencies
+
+git submodule add https://github.com/facebookresearch/detectron2.git submodules/detectron2
+cd submodules/detectron2
+pip install -e .
 ```
 
 
