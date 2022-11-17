@@ -1,3 +1,6 @@
 [submodule "MG-GAN"]
 	path = src/trajectory_predictor/models/MG-GAN
 	url = https://github.com/dendorferpatrick/MG-GAN.git
+[submodule "AdaBins"]
+	path = AdaBins
+	url = https://github.com/VladimirYugay/AdaBins
