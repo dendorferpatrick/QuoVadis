@@ -117,7 +117,6 @@ def main():
                                                           f'{sequence.name}.npy'))
 
         frames = range(tracker.df.frame.min(), tracker.df.frame.max() + 1)
-        frames = range(tracker.df.frame.min(), tracker.df.frame.min() + 5)
         
         predictor = get_predictor(cfg)
 
