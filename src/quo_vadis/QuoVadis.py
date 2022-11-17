@@ -880,8 +880,6 @@ class QuoVadis():
                 "`motion_dim` not valid! Value as to be in [2, 3]")
         self.max_frames = max_frames
 
-        print("test")
-
         # settings for run
         self.visibility = visibility
         self.interactions = interactions

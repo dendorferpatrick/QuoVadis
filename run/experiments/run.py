@@ -127,7 +127,7 @@ def main():
 
         # run model
         motion_model.run(motion_dim=cfg.MOTION_DIM,
-                         save_results=cfg.save_results,
+                         save_results=cfg.save,
                          save_directory=cfg.SAVE_DIRECTORY,
                          min_iou_threshold=cfg.MIN_IOU_THRESHOLD,
                          L2_threshold=cfg.L2_THRESHOLD,
