@@ -9,7 +9,7 @@ from quo_vadis.utils import prepare_sequence, get_cfg
 from tracker import MOTTracker
 
 from quo_vadis import QuoVadis
-from trajectory_predictor.Predictor import get_predictor
+from trajectory_predictor import get_predictor
 
 
 def get_parser():
