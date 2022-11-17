@@ -5,7 +5,13 @@ This repository provides the official PyTorch Lightning implementation of Goal-G
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
 Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
 
+```
+git clone --recurse-submodules https://github.com/dendorferpatrick/QuoVadis
+```
 
+```
+python run/experiments/run.py --sequences MOT17-02
+```
 
 ## Setup
 All code was developed and tested with Python 3.6.3, PyTorch 1.6.0., and PyTorch-Lightning 0.9.0.
@@ -21,7 +27,12 @@ pip install -r requirements.txt   # Install dependencies
 
 ```
 pip run.py
+
+# Download all required data and one tracker for single sequence (MOT17-02)
+bash donwload/download_quickstart.sh
 ```
+
+
 ### Feature Extraction
 
 ### Homography Estimation
