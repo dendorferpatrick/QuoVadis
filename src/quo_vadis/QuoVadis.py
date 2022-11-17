@@ -1883,7 +1883,7 @@ class QuoVadis():
     def run_eval(self):
         # model = "{}_{}".format(self.predictor.name,self.save_name)
 
-        command = f"bash ./TrackEval/eval_bash_scripts/eval_model.sh {self.sequence.name} {self.tracker.name} {self.tracker_folder}"
+        command = f"bash ./submodules/evluation_code/TrackEval/eval_bash_scripts/eval_model.sh {self.sequence.name} {self.tracker.name} {self.tracker_folder}"
         os.system(command)
 
     def run_analysis(self):
