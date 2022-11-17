@@ -32,7 +32,7 @@ def get_parser():
     )
 
     parser.add_argument(
-        "--run_eval",
+        "--eval",
         default=False,
         action="store_true",
         help="Run evaluation after running the tracker",
@@ -144,7 +144,7 @@ def main():
                          debug=True,
                          exists_ok=True,
                          y0=y0)
-        if cfg.save_results and cfg.run_eval:
+        if cfg.save_results and cfg.eval:
             motion_model.run_eval()
 
         if cfg.make_video or cfg.plot_results:
