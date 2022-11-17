@@ -5,6 +5,7 @@ This repository provides the official PyTorch Lightning implementation of Goal-G
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
 Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
 
+
 ```
 git clone --recurse-submodules https://github.com/dendorferpatrick/QuoVadis
 ```
@@ -25,12 +26,57 @@ pip install -r requirements.txt   # Install dependencies
 
 ## Quick Start
 
+````
+git clone https://github.com/dendorferpatrick/QuoVadis 
+cd QuoVadis
+git submodule update --init submodules/models/MG-GAN
 ```
 pip run.py
 
 # Download all required data and one tracker for single sequence (MOT17-02)
 bash donwload/download_quickstart.sh
 ```
+## Download Data and pre-processed Input for MOTChallenge (MOT17 and MOT20)
+
+### Complete Download
+If 
+```
+# download MOT17 data
+bash ./downloads/download_MOT17_complete.sh
+
+# download MOT20 data
+bash ./downloads/download_MOT20_complete.sh
+```
+
+### Individual downloads
+
+Download challenge data
+```
+# download MOT17 data
+bash ./downloads/download_MOT17_data.sh
+
+# download MOT20 data
+bash ./downloads/download_MOT20_data.sh
+```
+
+Download tracker inputs
+```
+# download MOT17 tracker
+bash ./downloads/download_MOT17_tracker.sh
+
+# download MOT20 tracker
+bash ./downloads/download_MOT20_tracker.sh
+```
+
+Download visual features
+```
+# download MOT17 tracker
+bash ./downloads/download_MOT17_visual_features.sh
+
+# download MOT20 tracker
+bash ./downloads/download_MOT20_visual_features.sh
+```
+
 
 
 ### Feature Extraction

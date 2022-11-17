@@ -1881,9 +1881,16 @@ class QuoVadis():
         return fig, ax
 
     def run_eval(self):
-        # model = "{}_{}".format(self.predictor.name,self.save_name)
 
-        command = f"bash ./submodules/evluation_code/TrackEval/eval_bash_scripts/eval_model.sh {self.sequence.name} {self.tracker.name} {self.tracker_folder}"
+        bash_eval_file = "./submodules/evluation_code/TrackEval/eval_bash_scripts/eval_model.sh"
+        if not os.path.isfile(bash_eval_file):
+            
+            raise NotImplementedError("""
+            The evaluation file does not exists. There might be 2 possible probelms \\
+                1. Makes sure you start the script from the main working directory \\
+                2. You are missing the 'TrackEval' submodule. To set up the module please clone repository with \\
+                    `git submodule update --init submodules/evaluation_code/TrackEval`""")
+        command = f"bash {bash_eval_file} {self.sequence.name} {self.tracker.name} {self.tracker_folder}"
         os.system(command)
 
     def run_analysis(self):
