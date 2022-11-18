@@ -1,26 +1,56 @@
 # Quo Vadis
 
-This repository provides the official PyTorch Lightning implementation of Goal-GAN, presented at [NeurIPS 2022](https://neurips.cc/)
+This repository provides an implementation of Quo Vadis presented at [NeurIPS 2022](https://neurips.cc/):
 
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
 Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
 
+This codebase builds upon [MG-GAN](https://github.com/selflein/MG-GAN), [Detectron2](https://github.com/facebookresearch/detectron2), [Deep-Person-ReID](https://github.com/KaiyangZhou/deep-person-reid.git), and [TrackEval](https://github.com/JonathonLuiten/TrackEval). 
+
+
+## Abstract
+Here comes the abstract ....
+
+
+
+<div align="center" style="background-color:red;">
+    <img src="misc/method.png" width="80%" alt=""/>
+</div>
+
+
+
+## Installation
 
 ```
 git clone --recurse-submodules https://github.com/dendorferpatrick/QuoVadis
 ```
+
+## Run Quo Vadis
 
 ```
 python run/experiments/run.py --sequences MOT17-02
 ```
 
 
-<div align="center">
-    <img src="misc/method.png" width="80%" alt=""/>
-</div>
+# Publication
+If you use this codebase in your research, please cite our publication:
+
+```
+@inproceedings{dendorfer2020accv,
+  title={Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?}, 
+  author = {Dendorfer, Patrick and Yugay, Vladimir and Ošep, Aljoša and Leal-Taixé, Laura},
+  year={2022},
+  booktitle={Conference on Neural Information Processing Systems},
+  }
+
+  
+
+```
+
+
 
 ## Setup
-All code was developed and tested with Python 3.6.3, PyTorch 1.6.0., and PyTorch-Lightning 0.9.0.
+All code was developed and tested with Python >=3.6 and PyTorch 1.11.0..
 
 You can setup a virtual environment and install the required packages:
 
@@ -145,17 +175,6 @@ The model is trained with an adversarial loss for which the discriminator classi
 ## Reference
 If you use this code for your research, please cite our work:
 
-```
-@inproceedings{dendorfer2020accv,
-  title={Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?}, 
-  author = {Dendorfer, Patrick and Yugay, Vladimir and Ošep, Aljoša and Leal-Taixé, Laura},
-  year={2022},
-  booktitle={Conference on Neural Information Processing Systems},
-  }
-
-  
-
-```
 
 
 ## Setup
