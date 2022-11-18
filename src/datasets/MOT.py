@@ -32,12 +32,12 @@ class MOTData(DataSet):
             "Field", ["id", "folder", "location", "setup_cb", "frame_cb"])
 
         _all_fields = {
-            "depth": Field("depth", "depth_img", "sequences", utils._depth_setup_cb_MOT, utils._depth_frame_cb_MOT),
-            "calibration": Field("calibration", "calib", "sequences", utils._calibration_setup_cb_mot, utils._calibration_frame_cb),
+            "depth": Field("depth", "depth", "sequences", utils._depth_setup_cb, utils._depth_frame_cb),
+            "calibration": Field("calibration", "calib", "sequences", utils._calibration_setup_cb, utils._calibration_frame_cb),
             "labels": Field("labels", "labels", "sequences", utils._labels_setup_cb_mot, utils._labels_frame_cb),
-            "lidar": Field("lidar", "depth_img", "sequences", utils._depth_setup_cb, utils._depth_frame_cb),
+           
             "pose": Field("pose", "floor_alignment_new", "sequences", utils._pose_setup_cb_mot, utils._pose_frame_cb),
-            "rgb": Field("rgb", "img1", "sequences", utils._rgb_setup_cb_MOT, utils._rgb_frame_cb_MOT),
+            "rgb": Field("rgb", "img1", "sequences", utils._rgb_setup_cb, utils._rgb_frame_cb),
             "dets": Field("dets", "det", "sequences", utils._dets_setup_cb, utils._dets_frame_cb),
             "panoptic": Field("panoptic", "panoptic", "sequences", utils._panoptic_setup_cb, utils._panoptic_frame_cb),
             "segmentation": Field("segmentation", "segmentation", "sequences", utils._segmentation_setup_cb, utils._segmentation_frame_cb),
@@ -97,117 +97,117 @@ class MOTData(DataSet):
 
 if __name__ == "__main__":
 
-    # df = pd.read_csv(
-    #     "/storage/user/dendorfp/MOT16/trajectories/MOT16-02_trajectories.csv")
+    # # df = pd.read_csv(
+    # #     "/storage/user/dendorfp/MOT16/trajectories/MOT16-02_trajectories.csv")
 
-    # load trajectories
-    import scipy.spatial.transform as S
-    o3d.visualization.webrtc_server.enable_webrtc()
+    # # load trajectories
+    # import scipy.spatial.transform as S
+    # o3d.visualization.webrtc_server.enable_webrtc()
 
-    mot = MOTTracking(partition=["01"], challenge="MOT16", fields=[
-        "rgb",
-        "lidar",
-        "panoptic",
-        "depth",
-        "calibration"])
-    frame = 59
-    item = mot.data.sequences[0].__getitem__(
-        frame, ["lidar", "pose", "calibration", "rgb", "lidar", "panoptic"])
+    # mot = MOTTracking(partition=["01"], challenge="MOT16", fields=[
+    #     "rgb",
+    #     "lidar",
+    #     "panoptic",
+    #     "depth",
+    #     "calibration"])
+    # frame = 59
+    # item = mot.data.sequences[0].__getitem__(
+    #     frame, ["lidar", "pose", "calibration", "rgb", "lidar", "panoptic"])
 
-    lidar = item["lidar"]
-    panoptic = item["panoptic"]["mask"]
+    # lidar = item["lidar"]
+    # panoptic = item["panoptic"]["mask"]
 
-    mask_shape = panoptic.shape
+    # mask_shape = panoptic.shape
 
-    mask = ((panoptic == 8) | (panoptic == 7) | (panoptic == 6)).reshape(-1)
+    # mask = ((panoptic == 8) | (panoptic == 7) | (panoptic == 6)).reshape(-1)
 
-    mask_p = (np.zeros((mask_shape[0], mask_shape[1])) == 0)
-    # mask_p[:, :int(0.3 *mask_shape[1])] = False
-    # mask_p[:700,:] = False
-    # mask_p[:, int((1- 0.3) * mask_shape[1]) :] = False
-    mask = np.logical_and(mask, mask_p.reshape(-1))
-    points, colors, _, img, new_cloud = mot.data.sequences[0].transform_lidar_world(
-        frame, transform=False)
+    # mask_p = (np.zeros((mask_shape[0], mask_shape[1])) == 0)
+    # # mask_p[:, :int(0.3 *mask_shape[1])] = False
+    # # mask_p[:700,:] = False
+    # # mask_p[:, int((1- 0.3) * mask_shape[1]) :] = False
+    # mask = np.logical_and(mask, mask_p.reshape(-1))
+    # points, colors, _, img, new_cloud = mot.data.sequences[0].transform_lidar_world(
+    #     frame, transform=False)
 
-    points = points[mask]
-    colors = colors[mask]
-    points[:, 1] *= -1
-    new_cloud.points = o3d.utility.Vector3dVector(points)
-    new_cloud.colors = o3d.utility.Vector3dVector(colors)
-    # vis = o3d.visualization.Visualizer()
+    # points = points[mask]
+    # colors = colors[mask]
+    # points[:, 1] *= -1
+    # new_cloud.points = o3d.utility.Vector3dVector(points)
+    # new_cloud.colors = o3d.utility.Vector3dVector(colors)
+    # # vis = o3d.visualization.Visualizer()
 
-    # vis.create_window(visible=False) #works for me with False, on some systems needs to be true
-    # vis.add_geometry(new_cloud)
-    # vis.update_geometry(new_cloud)
-    # vis.poll_events()
-    # vis.update_renderer()
-    # vis.capture_screen_image("notebooks/3d.png")
-    # vis.destroy_window()
-    o3d.visualization.draw(new_cloud)
-
-    from pyntcloud import PyntCloud
-
-    cloud = PyntCloud.from_instance("open3d", new_cloud)
-    is_floor = cloud.add_scalar_field("plane_fit", max_dist=1)
-    print(is_floor)
-    print(cloud.__dict__["_PyntCloud__points"])
-    df = cloud.__dict__["_PyntCloud__points"]
-    mask_plane = (df.is_plane == 1)
-    points = points[mask_plane]
-    colors = colors[mask_plane]
-    new_cloud.points = o3d.utility.Vector3dVector(points)
-    new_cloud.colors = o3d.utility.Vector3dVector(colors)
-
-    from pyntcloud.ransac.models import RansacPlane
-
-    def compute_angle(u: np.ndarray, v: np.ndarray) -> float:
-        """Computes angle between two vectors
-        Args:
-            u: first vector
-            v: second vector
-        Returns:
-            angle between the vectors in radians
-        """
-        return np.arccos(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
-
-    def get_best_fit_plane(open3d_point_cloud, max_dist=1):
-        r_plane = RansacPlane(max_dist=max_dist)
-
-        r_plane.fit(open3d_point_cloud.points)  # or
-        r_plane.least_squares_fit(open3d_point_cloud.points)
-        print(r_plane.__dict__)
-        return (r_plane.normal, r_plane.point)
-
-    normal, origin = get_best_fit_plane(new_cloud, 2)
-
-    points = np.array(new_cloud.points) - origin
-
-    # point = points - np.array([0, 0, np.min(points[:, -1])])
-    new_cloud.points = o3d.utility.Vector3dVector(points)
+    # # vis.create_window(visible=False) #works for me with False, on some systems needs to be true
+    # # vis.add_geometry(new_cloud)
+    # # vis.update_geometry(new_cloud)
+    # # vis.poll_events()
+    # # vis.update_renderer()
+    # # vis.capture_screen_image("notebooks/3d.png")
+    # # vis.destroy_window()
     # o3d.visualization.draw(new_cloud)
-    c_cloud = copy.deepcopy(new_cloud)
-    rotation_axis = np.cross(np.array([0, 1, 0]), normal)
 
-    rotation_axis /= np.sqrt(np.sum(rotation_axis**2))
+    # from pyntcloud import PyntCloud
 
-    vec = points
+    # cloud = PyntCloud.from_instance("open3d", new_cloud)
+    # is_floor = cloud.add_scalar_field("plane_fit", max_dist=1)
+    # print(is_floor)
+    # print(cloud.__dict__["_PyntCloud__points"])
+    # df = cloud.__dict__["_PyntCloud__points"]
+    # mask_plane = (df.is_plane == 1)
+    # points = points[mask_plane]
+    # colors = colors[mask_plane]
+    # new_cloud.points = o3d.utility.Vector3dVector(points)
+    # new_cloud.colors = o3d.utility.Vector3dVector(colors)
 
-    rotation_radians = - compute_angle(normal,  np.array([0, 1, 0]))
+    # from pyntcloud.ransac.models import RansacPlane
 
-    # print(rotation_radians)
+    # def compute_angle(u: np.ndarray, v: np.ndarray) -> float:
+    #     """Computes angle between two vectors
+    #     Args:
+    #         u: first vector
+    #         v: second vector
+    #     Returns:
+    #         angle between the vectors in radians
+    #     """
+    #     return np.arccos(np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v)))
 
-    rotation_vector = rotation_radians * rotation_axis
-    rotation = S.Rotation.from_rotvec(rotation_vector)
-    rotated_vec = rotation.apply(vec)
+    # def get_best_fit_plane(open3d_point_cloud, max_dist=1):
+    #     r_plane = RansacPlane(max_dist=max_dist)
 
-    new_cloud.points = o3d.utility.Vector3dVector(rotated_vec)
+    #     r_plane.fit(open3d_point_cloud.points)  # or
+    #     r_plane.least_squares_fit(open3d_point_cloud.points)
+    #     print(r_plane.__dict__)
+    #     return (r_plane.normal, r_plane.point)
 
-    points = np.array(new_cloud.points)
-    points[:, 2] = points[:, 2] - np.min(points[:, 2])
-    # points[:, 0]=points[:, 0] - np.min(points[:, 0])
-    new_cloud.points = o3d.utility.Vector3dVector(points)
-    o3d.visualization.draw(new_cloud)
+    # normal, origin = get_best_fit_plane(new_cloud, 2)
 
-if __name__ == "__main__":
+    # points = np.array(new_cloud.points) - origin
+
+    # # point = points - np.array([0, 0, np.min(points[:, -1])])
+    # new_cloud.points = o3d.utility.Vector3dVector(points)
+    # # o3d.visualization.draw(new_cloud)
+    # c_cloud = copy.deepcopy(new_cloud)
+    # rotation_axis = np.cross(np.array([0, 1, 0]), normal)
+
+    # rotation_axis /= np.sqrt(np.sum(rotation_axis**2))
+
+    # vec = points
+
+    # rotation_radians = - compute_angle(normal,  np.array([0, 1, 0]))
+
+    # # print(rotation_radians)
+
+    # rotation_vector = rotation_radians * rotation_axis
+    # rotation = S.Rotation.from_rotvec(rotation_vector)
+    # rotated_vec = rotation.apply(vec)
+
+    # new_cloud.points = o3d.utility.Vector3dVector(rotated_vec)
+
+    # points = np.array(new_cloud.points)
+    # points[:, 2] = points[:, 2] - np.min(points[:, 2])
+    # # points[:, 0]=points[:, 0] - np.min(points[:, 0])
+    # new_cloud.points = o3d.utility.Vector3dVector(points)
+    # o3d.visualization.draw(new_cloud)
+
+
     DataSet(sequences=["MOT17-02"], challenge="MOT17",
             prefix="./data", fields=["rgb"])

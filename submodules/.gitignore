@@ -1,0 +1,7 @@
+*
+!.gitignore
+!AdaBins
+!detectron2
+!MG-GAN
+!TrackEval
+!reID

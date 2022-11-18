@@ -1,15 +1,15 @@
 [submodule "MG-GAN"]
-	path = submodules/models/MG-GAN
+	path = submodules/MG-GAN
 	url = https://github.com/dendorferpatrick/MG-GAN.git
 [submodule "TrackEval"]
-	path = submodules/evaluation_code/TrackEval
+	path = submodules/TrackEval
 	url = https://github.com/dendorferpatrick/TrackEval.git
 [submodule "AdaBins"]
-	path = submodules/depth_estimator/AdaBins
+	path = submodules/AdaBins
 	url = https://github.com/VladimirYugay/AdaBins
-[submodule "submodules/detectron2"]
+[submodule "detectron2"]
 	path = submodules/detectron2
 	url = https://github.com/facebookresearch/detectron2.git
-[submodule "submodules/reID/reID"]
-	path = submodules/reID/reID
+[submodule "reID"]
+	path = submodules/reID
 	url = https://github.com/KaiyangZhou/deep-person-reid.git

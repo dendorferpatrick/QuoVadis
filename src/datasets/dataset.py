@@ -164,14 +164,14 @@ class Sequence:
         return np.array(pt_cloud.points),  np.array(pt_cloud.colors), None, img, pt_cloud
 
     def transform_lidar_world(self, key, transform=True):
-        item = self.__getitem__(key, ["lidar", "pose", "calibration", "rgb"])
-        lidar = item["lidar"]
+        item = self.__getitem__(key, ["depth", "pose", "calibration", "rgb"])
+        depth = item["depth"]
         calibration = item["calibration"]
         img = item["rgb"]
 
         rgbd_img = o3d.geometry.RGBDImage.create_from_color_and_depth(
             o3d.geometry.Image(img),
-            o3d.geometry.Image(lidar),
+            o3d.geometry.Image(depth),
             convert_rgb_to_intensity=False,
             depth_scale=1,
             depth_trunc=1e10,

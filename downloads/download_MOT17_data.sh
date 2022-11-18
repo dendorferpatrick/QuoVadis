@@ -22,5 +22,3 @@ done
 
 
 cd $CURRENTDIR
-
-

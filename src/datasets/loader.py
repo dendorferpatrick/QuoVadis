@@ -15,7 +15,7 @@ import subprocess
 from tqdm import tqdm
 
 import glob
-from .utils import id_matching, compute_focal_length, rigid_transform_3D
+
 
 """ Coordinates are given in image (u [height], v [width] )  and world coordiantes (x, y) """
 
@@ -211,8 +211,9 @@ class PanopticLoader():
             if not color_str in self.color_to_coco:
                 continue
             coco_class = self.color_to_coco[color_str]
-           
+            
             category = self.classes2category[coco_class]
+            
             if len(include_categories) > 0:
                 if not category in include_categories:
                     continue
