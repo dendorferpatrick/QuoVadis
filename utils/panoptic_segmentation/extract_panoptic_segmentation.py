@@ -54,9 +54,9 @@ def run_panoptic_segmentation(frames, output_folder, sequence):
 
     predictor = DefaultPredictor(cfg)
 
-    panoptic_output_folder = os.path.join(output_folder, "panoptic", sequence)
+    panoptic_output_folder = os.path.join(output_folder, "panoptic")
     segmentation_output_folder = os.path.join(
-        output_folder, "segmentation", sequence)
+        output_folder, "segmentation")
     detection_output_folder = os.path.join(output_folder, "dets")
     for folder in [panoptic_output_folder, segmentation_output_folder, detection_output_folder]:
         if not os.path.isdir(folder):
