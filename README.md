@@ -31,14 +31,14 @@ git submodule add https://github.com/facebookresearch/detectron2.git submodules/
 cd submodules/detectron2
 pip install -e .
 ```
-
+python submodules/AdaBins/scripts/infer.py --model_path data/AdaBins_weights/AdaBins_synthetic.pt --input_path data/MOT17/sequences/MOT17-02/img1 --output_path data/MOT17/sequences/MOT17-02/depth
 
 ## Quick Start
 
-````
+```
 git clone https://github.com/dendorferpatrick/QuoVadis 
 cd QuoVadis
-git submodule update --init submodules/models/MG-GAN
+git submodule update --init submodules/MG-GAN
 ```
 pip run.py
 
@@ -177,7 +177,7 @@ You can also change the configuration by directly typing into the command line, 
 python run.py batch_size=64 lr_scheduler_G=1e-4
 ```
 The training process and models are saved and logged with tensorboard. The final model performance is evaluated on the test set and save in 'results.pt'. You can use this [script](/utils/collect_results.py) writing all results into a csv in [resultCSV](resultCSV).
-
+```
 
 ## Synthetic Dataset
 
@@ -207,3 +207,8 @@ As well as RGB images of the corresponding scene in the dataset folder.
 
 ## Contact
 If you find any bugs or have any questions, please open an issue or contact me via mail (patrick.dendorfer@tum.de).
+
+
+<div align="center">
+    <img src="misc/bev_reconstruction.png" width="80%" alt=""/>
+</div>
