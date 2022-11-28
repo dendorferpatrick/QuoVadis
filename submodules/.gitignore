@@ -1,0 +1,8 @@
+*
+!.gitignore
+!AdaBins
+!detectron2
+!MG-GAN
+!TrackEval
+!deep-person-reid
+!TrackEval

@@ -1,0 +1,21 @@
+[submodule "MG-GAN"]
+	path = submodules/MG-GAN
+	url = https://github.com/dendorferpatrick/MG-GAN.git
+[submodule "TrackEval"]
+	path = submodules/TrackEval
+	url = https://github.com/dendorferpatrick/TrackEval.git
+[submodule "detectron2"]
+	path = submodules/detectron2
+	url = https://github.com/facebookresearch/detectron2.git
+[submodule "deep-person-reid"]
+	path = submodules/deep-person-reid
+	url = https://github.com/KaiyangZhou/deep-person-reid.git
+[submodule "AdaBins"]
+	path = submodules/AdaBins
+	url = https://github.com/VladimirYugay/AdaBins
+[submodule "submodules/deep-person-reid"]
+	path = submodules/deep-person-reid
+	url = https://github.com/KaiyangZhou/deep-person-reid.git
+[submodule "submodules/AdaBins"]
+	path = submodules/AdaBins
+	url = https://github.com/VladimirYugay/AdaBins

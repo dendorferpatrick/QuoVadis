@@ -1,0 +1,13 @@
+*.DS_Store
+.python-version
+**__pycache__
+
+*.egg-info
+
+# Ignore data in paths
+./data
+!./data.gitignore
+
+./src/trajectory_predictor/models/MG-GAN/
+
+.vscode
