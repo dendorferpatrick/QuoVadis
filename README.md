@@ -68,7 +68,7 @@ See [docs/BEV_RECONSTRUCTION.md](docs/BEV_RECONSTRUCTION.md) for detailed instal
 In the paper, we provide results on the MOT17 and MOT20 datasets. Here, we run Quo Vadis on 8 different state-of-the-art trackers on the [MOTChallenge](https://motchallenge.net/) benchmark.
 
 ### Results for MOT17
- For the MOT17 dataset, we follow the evaluation protocol used in ByteTrack and we use the first half for training and the second for evaluation. To re-run the evaluation, run ```bash run_MOT17.sh```.
+ For the MOT17 dataset, we follow the evaluation protocol used in ByteTrack and we use the first half for training and the second for evaluation. To re-run the evaluation, run ```bash run_MOT17.sh```. The numbers in () refer to the changes compared to the results of input baseline tracker.
 <center> 
         <table> 
                 <thead> 
@@ -94,7 +94,7 @@ In the paper, we provide results on the MOT17 and MOT20 datasets. Here, we run Q
 </center>
 
 ### Results for MOT20
-In this experiment, we use the baseline tracker trained on MOT17 and evaluate the performance of ByteTrack on the MOT20 training dataset. To re-run the evaluation, run ```bash run_MOT20.sh```.
+In this experiment, we use the baseline tracker trained on MOT17 and evaluate the performance of ByteTrack on the MOT20 training dataset. To re-run the evaluation, run ```bash run_MOT20.sh```. The numbers in () refer to the changes compared to the results of input baseline tracker.
 <center> 
         <table> 
                 <thead> 
