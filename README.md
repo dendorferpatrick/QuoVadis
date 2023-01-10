@@ -3,7 +3,7 @@
 This repository provides an implementation of Quo Vadis presented at [NeurIPS 2022](https://neurips.cc/):
 
 [<b>Quo Vadis: Is Trajectory Forecasting the Key Towards Long-Term Multi-Object Tracking?</b>  
-Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2010.01114)  
+Patrick Dendorfer, Vladimir Yugay, Aljoša Ošep, Laura Leal-Taixé](https://arxiv.org/abs/2210.07681)  
 
 
 This codebase builds upon [MG-GAN](https://github.com/selflein/MG-GAN), [AdaBins](https://github.com/shariqfarooq123/AdaBins), [Detectron2](https://github.com/facebookresearch/detectron2), [Deep-Person-ReID](https://github.com/KaiyangZhou/deep-person-reid.git), and [TrackEval](https://github.com/JonathonLuiten/TrackEval). 
